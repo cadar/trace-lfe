@@ -1,12 +1,6 @@
 (defmodule trace
   (export (start 0)))
 
-(defun args-formatted-string
-  ((()) '" ")				;List of arguments!
-  (((a . as))				;List of arguments!
-   (: lists concat
-     (list '" " a '"=~p" (args-formatted-string as)))))
-
 (defun args-formated-string (li)
   (if (== li '())
     '" "
