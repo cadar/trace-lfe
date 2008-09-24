@@ -35,8 +35,14 @@
 			     (list ,res2))))))
 
 (defmacro trace
-  ((('defun name args . body))
-   `(defun ,name ,args
+  ((('define . ((name . args) . body)) . '())
+   `(define (,name . ,args)
+      (print-fun-start ',name ,args)
+      (let ((res . ,body))
+	(print-fun-result ',name ,args res)
+	res)))
+  ((('defun . (name . (args . body))) . '())
+   `(define (,name . ,args)
       (print-fun-start ',name ,args)
       (let ((res . ,body))
 	(print-fun-result ',name ,args res)
