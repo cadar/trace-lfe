@@ -1,13 +1,11 @@
 (defmodule trace
   (export (start 0)))
 
-(defun args-formated-string (li)
-  (if (== li '())
-    '" "
-    (progn
-      (: lists concat 
- 	(list '" " (hd li) '"=~p"
- 	      (args-formated-string (tl li)))))))
+(defun args-formatted-string
+  ((()) '" ")				;List of arguments!
+  (((a . as))				;List of arguments!
+   (: lists concat
+     (list '" " a '"=~p" (args-formatted-string as)))))
 
 (defmacro print-fun-start (name2 args2)	;No matching of arguments!
   `(progn
@@ -16,7 +14,7 @@
 	 (list '"IN [ "
 	       ,name2
 	       '","
-	       (args-formated-string ',args2)
+	       (args-formatted-string ',args2)
 	       '"]~n"))
        (list . ,args2))))
 
@@ -27,7 +25,7 @@
 	 (list '"OUT[ "
 	       ,name2
 	       '","
-	       (args-formated-string ',args2)
+	       (args-formatted-string ',args2)
 	       '"=> "
 	       '"~p "
 	       '"]~n"))
