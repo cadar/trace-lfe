@@ -11,6 +11,10 @@ ${MAIN}.beam: ${MAIN}.lfe
 start: ${MAIN}.beam
 	@erl -noshell -pa ${LFE_EBIN} -eval 'code:load_file(${MAIN}).' -eval '${MAIN}:start().' -s erlang halt
 
+shell:
+	@erl  -noshell -pa ${LFE_EBIN} -noinput -eval "user_drv:start(['tty_sl -c -e',{lfe_shell,start,[]}])."
+
+
 clean:
 	@rm -f *.beam *.dump *.out
 
