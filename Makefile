@@ -15,12 +15,16 @@ shell:
 	@erl -pa ${LFE_EBIN} -noshell -noinput -s lfe_boot start
 
 clean:
-	@rm -f *.beam *.dump *.out
+	@rm -f *.beam *.dump *.out *.err
 
 # syntax-check works only on main file.
 # Solution: Work in main, Iron out to sub files. :(
 check-syntax:
-	@erl -noshell -pa ${LFE_EBIN} -eval 'code:load_file(lfe_comp).' -eval 'File=hd(init:get_plain_arguments()), try lfe_comp:file(File) of {error,X,AR} -> lists:foreach(fun(L)-> {Line,B,Error}=L, io:format("~s:~p: ~p ~p~n",[File,Line,B,Error]) end, X),halt(0) ; {ok,X,AR} -> halt(0); {X,Y,Z} ->  io:format("~p:~p:~p:",[X,Y,Z])  catch X:Y -> io:format("~p:1: Compiler crash ~p ~p ~n",[File,X,Y]), halt(0) end.' -extra ${MAIN}_flymake.lfe 2> err.out
+	@erl -noshell -pa ${LFE_EBIN} \
+	-eval 'code:load_file(lfe_comp).' \
+	-eval 'File=hd(init:get_plain_arguments()), try lfe_comp:file(File) of {ok,_Module} -> halt(0); error -> halt(0); All ->  io:format("./~s:1: ~p~n",[File,All]) catch X:Y -> io:format("~p:1: Makefile error: ~p ~p ~n",[File,X,Y]) end, halt(0).' \
+	-extra ${MAIN}_flymake.lfe 2> compile.err | tee compile.out
+	rm ${MAIN}_flymake.beam
 
 help:
 	@echo ";; Copy to .emacs, then restart."
